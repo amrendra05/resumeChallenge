@@ -1,5 +1,7 @@
-import { cn } from "@/lib/utils";
+import { Slider } from "@/components/ui/slider";
 import { motion } from "framer-motion";
+import { Calendar } from "lucide-react";
+import { useState } from "react";
 
 interface TimelineFilterProps {
   years: number[];
@@ -8,50 +10,61 @@ interface TimelineFilterProps {
 }
 
 export function TimelineFilter({ years, selectedYear, onSelectYear }: TimelineFilterProps) {
-  return (
-    <div className="space-y-3 py-2">
-      <h3 className="font-heading font-semibold text-lg">Timeline</h3>
-      <div className="relative flex items-center justify-between w-full h-12 bg-muted/30 rounded-full px-2 border border-border/50">
-        <button
-          onClick={() => onSelectYear(null)}
-          className={cn(
-            "relative z-10 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300",
-            selectedYear === null 
-              ? "text-primary-foreground" 
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          All Time
-          {selectedYear === null && (
-            <motion.div
-              layoutId="timeline-active"
-              className="absolute inset-0 bg-primary rounded-full -z-10 shadow-md"
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            />
-          )}
-        </button>
+  const minYear = Math.min(...years);
+  const maxYear = new Date().getFullYear();
+  const [sliderValue, setSliderValue] = useState<number[]>(selectedYear ? [selectedYear] : [minYear]);
 
-        {years.map((year) => (
-          <button
-            key={year}
-            onClick={() => onSelectYear(year)}
-            className={cn(
-              "relative z-10 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300",
-              selectedYear === year 
-                ? "text-primary-foreground" 
-                : "text-muted-foreground hover:text-foreground"
-            )}
+  const handleSliderChange = (value: number[]) => {
+    setSliderValue(value);
+    if (value[0] === minYear) {
+      onSelectYear(null);
+    } else {
+      onSelectYear(value[0]);
+    }
+  };
+
+  return (
+    <div className="space-y-6 py-4">
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-primary" />
+            <h3 className="font-heading font-semibold text-lg">Filter by Timeline</h3>
+          </div>
+          <div className="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
+            {selectedYear ? selectedYear : `${minYear} - ${maxYear}`}
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4">Drag to narrow down projects by year</p>
+      </div>
+
+      <div className="space-y-4">
+        <Slider
+          value={sliderValue}
+          onValueChange={handleSliderChange}
+          min={minYear}
+          max={maxYear}
+          step={1}
+        />
+        
+        <div className="flex justify-between text-xs text-muted-foreground px-1">
+          <span>{minYear}</span>
+          <span>{maxYear}</span>
+        </div>
+
+        {selectedYear && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={() => {
+              setSliderValue([minYear]);
+              onSelectYear(null);
+            }}
+            className="w-full py-2 text-sm font-medium text-primary hover:bg-primary/10 rounded-lg transition-colors"
           >
-            {year}
-            {selectedYear === year && (
-              <motion.div
-                layoutId="timeline-active"
-                className="absolute inset-0 bg-primary rounded-full -z-10 shadow-md"
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              />
-            )}
-          </button>
-        ))}
+            Clear Filter
+          </motion.button>
+        )}
       </div>
     </div>
   );

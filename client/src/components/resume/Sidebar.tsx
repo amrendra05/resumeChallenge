@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Mail, MapPin, Linkedin, Github, Award, ExternalLink } from "lucide-react";
+import { Mail, MapPin, Linkedin, Github, Trophy, ExternalLink } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -67,7 +67,7 @@ export function Sidebar() {
       {/* Awards Section */}
       <div className="space-y-4">
         <h3 className="font-heading font-semibold text-lg flex items-center gap-2 px-2">
-          <Award className="w-5 h-5 text-primary" />
+          <Trophy className="w-5 h-5 text-amber-500" />
           <span>Awards & Recognition</span>
         </h3>
         
@@ -78,13 +78,19 @@ export function Sidebar() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + (index * 0.1) }}
+              whileHover={{ x: 4 }}
             >
-              <Card className="border-l-4 border-l-primary shadow-sm hover:shadow-md transition-shadow">
+              <Card className="border-l-4 border-l-amber-500 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20 dark:to-transparent">
                 <CardContent className="p-4">
-                  <div className="font-semibold text-foreground">{award.title}</div>
-                  <div className="text-sm text-muted-foreground mt-1 flex justify-between">
-                    <span>{award.issuer}</span>
-                    <Badge variant="secondary" className="text-xs font-normal">{award.year}</Badge>
+                  <div className="flex items-start gap-2">
+                    <Trophy className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="font-semibold text-foreground">{award.title}</div>
+                      <div className="text-sm text-muted-foreground mt-1 flex justify-between">
+                        <span>{award.issuer}</span>
+                        <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-normal">{award.year}</Badge>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
