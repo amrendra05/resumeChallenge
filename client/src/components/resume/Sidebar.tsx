@@ -67,7 +67,9 @@ export function Sidebar() {
       {/* Awards Section */}
       <div className="space-y-4">
         <h3 className="font-heading font-semibold text-lg flex items-center gap-2 px-2">
-          <Trophy className="w-5 h-5 text-amber-500" />
+          <div className="p-1.5 rounded-lg bg-amber-500/20">
+            <Trophy className="w-6 h-6 text-amber-500" />
+          </div>
           <span>Awards & Recognition</span>
         </h3>
         

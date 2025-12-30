@@ -1,7 +1,7 @@
-import { Slider } from "@/components/ui/slider";
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
+import { RangeSlider } from "./RangeSlider";
 
 interface TimelineFilterProps {
   years: number[];
@@ -17,7 +17,6 @@ export function TimelineFilter({ years, selectedYear, onSelectYear }: TimelineFi
   const handleSliderChange = (value: number[]) => {
     setSliderRange(value);
     const [startYear, endYear] = value;
-    // If the range doesn't match all years, filter by the end year (more recent year selected)
     if (startYear === minYear && endYear === maxYear) {
       onSelectYear(null);
     } else {
@@ -37,16 +36,15 @@ export function TimelineFilter({ years, selectedYear, onSelectYear }: TimelineFi
             {sliderRange[0]} - {sliderRange[1]}
           </div>
         </div>
-        <p className="text-xs text-muted-foreground mb-4">Drag to filter projects from {sliderRange[0]} to {sliderRange[1]}</p>
+        <p className="text-xs text-muted-foreground mb-4">Drag either handle to filter projects</p>
       </div>
 
       <div className="space-y-4">
-        <Slider
-          value={sliderRange}
-          onValueChange={handleSliderChange}
+        <RangeSlider
           min={minYear}
           max={maxYear}
-          step={1}
+          value={sliderRange}
+          onChange={handleSliderChange}
         />
         
         <div className="flex justify-between text-xs text-muted-foreground px-1 font-semibold">
