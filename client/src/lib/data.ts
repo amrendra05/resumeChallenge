@@ -114,7 +114,9 @@ export const CERTIFICATIONS = [
   { name: "AWS Solutions Architect Professional", icon: Cloud, color: "text-orange-500", link: "#" },
   { name: "Azure DevOps Engineer Expert", icon: Server, color: "text-blue-500", link: "#" },
   { name: "Google Professional Cloud Architect", icon: Globe, color: "text-red-500", link: "#" },
-  { name: "CKA: Certified Kubernetes Administrator", icon: Cpu, color: "text-blue-400", link: "#" }
+  { name: "CKA: Certified Kubernetes Administrator", icon: Cpu, color: "text-blue-400", link: "#" },
+  { name: "Terraform Associate", icon: Code, color: "text-indigo-500", link: "#" },
+  { name: "HashiCorp Certified", icon: Shield, color: "text-purple-500", link: "#" }
 ];
 
 export const AWARDS = [

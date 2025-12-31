@@ -5,7 +5,10 @@ import { TimelineFilter } from "@/components/resume/TimelineFilter";
 import { ProjectList } from "@/components/resume/ProjectList";
 import { Certifications } from "@/components/resume/Certifications";
 import { PROJECTS, SKILLS, YEARS } from "@/lib/data";
+import { downloadResumePDF } from "@/lib/pdfExport";
 import { motion } from "framer-motion";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
@@ -31,20 +34,34 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 lg:p-12">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-[300px_1fr] gap-8 lg:gap-16">
-        
-        {/* Left Column - Fixed on desktop, scrollable on mobile */}
-        <div className="lg:sticky lg:top-12 lg:h-[calc(100vh-6rem)]">
-          <Sidebar />
+      <div className="max-w-7xl mx-auto">
+        {/* Download Button - Top Right */}
+        <div className="flex justify-end mb-6">
+          <Button 
+            onClick={downloadResumePDF}
+            variant="outline"
+            className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+            data-testid="button-download-pdf"
+          >
+            <Download className="w-4 h-4" />
+            Download PDF
+          </Button>
         </div>
 
-        {/* Right Column - Main Content */}
-        <motion.main 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="space-y-10"
-        >
+        <div id="resume-content" className="grid lg:grid-cols-[300px_1fr] gap-8 lg:gap-16">
+        
+          {/* Left Column - Fixed on desktop, scrollable on mobile */}
+          <div className="lg:sticky lg:top-12 lg:h-[calc(100vh-6rem)]">
+            <Sidebar />
+          </div>
+
+          {/* Right Column - Main Content */}
+          <motion.main 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="space-y-10"
+          >
           {/* Section 1: Header */}
           <section className="space-y-4">
             <div>
@@ -94,6 +111,7 @@ export default function Home() {
           </section>
 
         </motion.main>
+        </div>
       </div>
     </div>
   );
