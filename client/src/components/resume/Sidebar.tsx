@@ -1,14 +1,29 @@
 import { motion } from "framer-motion";
-import { Mail, MapPin, Linkedin, Github, Trophy, ExternalLink } from "lucide-react";
+import { Mail, MapPin, Linkedin, Github, Trophy, ExternalLink, Camera } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { AWARDS } from "@/lib/data";
-import headshot from "@assets/generated_images/professional_headshot_of_a_cloud_engineer.png";
+import { AWARDS, PROFILE } from "@/lib/data";
+import { useState, useRef } from "react";
+import headshotDefault from "@assets/generated_images/professional_headshot_of_a_cloud_engineer.png";
 
 export function Sidebar() {
+  const [headshot, setHeadshot] = useState(headshotDefault);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setHeadshot(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <motion.aside 
       initial={{ opacity: 0, x: -20 }}
@@ -18,12 +33,22 @@ export function Sidebar() {
     >
       {/* Profile Section */}
       <div className="flex flex-col items-center text-center space-y-4">
-        <div className="relative group">
+        <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
           <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-blue-600 rounded-full opacity-75 group-hover:opacity-100 transition duration-500 blur-sm"></div>
           <Avatar className="w-48 h-48 border-4 border-background relative shadow-xl">
             <AvatarImage src={headshot} alt="Profile Picture" className="object-cover" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <Camera className="w-8 h-8 text-white" />
+          </div>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handlePictureChange} 
+            accept="image/*" 
+            className="hidden" 
+          />
         </div>
       </div>
 
@@ -33,31 +58,28 @@ export function Sidebar() {
           <h3 className="font-heading font-semibold text-lg mb-4 text-foreground/80">Contact</h3>
           
           <div className="space-y-3 text-sm">
-            <a href="mailto:alex.cloud@example.com" className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors group">
+            <a href={`mailto:${PROFILE.email}`} className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors group">
               <div className="p-2 rounded-md bg-primary/10 group-hover:bg-primary/20 transition-colors">
                 <Mail className="w-4 h-4 text-primary" />
               </div>
-              <span>alex.cloud@example.com</span>
+              <span>{PROFILE.email}</span>
             </a>
             
             <div className="flex items-center gap-3 text-muted-foreground group">
               <div className="p-2 rounded-md bg-primary/10 transition-colors">
                 <MapPin className="w-4 h-4 text-primary" />
               </div>
-              <span>San Francisco, CA</span>
+              <span>{PROFILE.location}</span>
             </div>
             
             <Separator className="my-4" />
             
             <div className="flex gap-2 justify-center">
-              <Button variant="outline" size="icon" className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all">
-                <Linkedin className="w-4 h-4" />
+              <Button variant="outline" size="icon" asChild className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all">
+                <a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin className="w-4 h-4" /></a>
               </Button>
-              <Button variant="outline" size="icon" className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all">
-                <Github className="w-4 h-4" />
-              </Button>
-              <Button variant="outline" size="icon" className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all">
-                <ExternalLink className="w-4 h-4" />
+              <Button variant="outline" size="icon" asChild className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all">
+                <a href={PROFILE.github} target="_blank" rel="noopener noreferrer"><Github className="w-4 h-4" /></a>
               </Button>
             </div>
           </div>

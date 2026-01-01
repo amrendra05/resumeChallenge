@@ -4,7 +4,7 @@ import { SkillsFilter } from "@/components/resume/SkillsFilter";
 import { TimelineFilter } from "@/components/resume/TimelineFilter";
 import { ProjectList } from "@/components/resume/ProjectList";
 import { Certifications } from "@/components/resume/Certifications";
-import { PROJECTS, SKILLS, YEARS } from "@/lib/data";
+import { PROJECTS, SKILLS, YEARS, PROFILE } from "@/lib/data";
 import { downloadResumePDF } from "@/lib/pdfExport";
 import { motion } from "framer-motion";
 import { Download } from "lucide-react";
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedYearRange, setSelectedYearRange] = useState<[number, number] | null>(null);
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills(prev => 
@@ -24,13 +24,15 @@ export default function Home() {
 
   const filteredProjects = useMemo(() => {
     return PROJECTS.filter(project => {
-      const matchesYear = selectedYear ? project.year === selectedYear : true;
+      const matchesYear = selectedYearRange 
+        ? project.year >= selectedYearRange[0] && project.year <= selectedYearRange[1]
+        : true;
       const matchesSkills = selectedSkills.length > 0 
         ? selectedSkills.every(skill => project.skills.includes(skill))
         : true;
       return matchesYear && matchesSkills;
     });
-  }, [selectedYear, selectedSkills]);
+  }, [selectedYearRange, selectedSkills]);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 lg:p-12">
@@ -66,16 +68,15 @@ export default function Home() {
           <section className="space-y-4">
             <div>
               <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tight text-foreground">
-                Alex Cloudwalker
+                {PROFILE.name}
               </h1>
               <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mt-2">
-                Senior Cloud Architect & DevOps Engineer
+                {PROFILE.title}
               </h2>
             </div>
             
             <p className="text-lg leading-relaxed text-foreground/80 max-w-2xl">
-              Specializing in scalable cloud infrastructure, serverless architectures, and automated delivery pipelines. 
-              I turn complex infrastructure problems into elegant, code-defined solutions.
+              {PROFILE.intro}
             </p>
 
             <Certifications />
@@ -94,8 +95,7 @@ export default function Home() {
           <section>
             <TimelineFilter 
               years={YEARS} 
-              selectedYear={selectedYear} 
-              onSelectYear={setSelectedYear} 
+              onSelectRange={setSelectedYearRange} 
             />
           </section>
 
