@@ -5,22 +5,22 @@ import { RangeSlider } from "./RangeSlider";
 
 interface TimelineFilterProps {
   years: number[];
-  selectedYear: number | null;
-  onSelectYear: (year: number | null) => void;
+  onSelectRange: (range: [number, number] | null) => void;
 }
 
-export function TimelineFilter({ years, selectedYear, onSelectYear }: TimelineFilterProps) {
+export function TimelineFilter({ years, onSelectRange }: TimelineFilterProps) {
   const minYear = Math.min(...years);
   const maxYear = new Date().getFullYear();
-  const [sliderRange, setSliderRange] = useState<number[]>([minYear, maxYear]);
+  const [sliderRange, setSliderRange] = useState<[number, number]>([minYear, maxYear]);
 
   const handleSliderChange = (value: number[]) => {
-    setSliderRange(value);
-    const [startYear, endYear] = value;
-    if (startYear === minYear && endYear === maxYear) {
-      onSelectYear(null);
+    const newRange: [number, number] = [value[0], value[1]];
+    setSliderRange(newRange);
+    
+    if (newRange[0] === minYear && newRange[1] === maxYear) {
+      onSelectRange(null);
     } else {
-      onSelectYear(endYear);
+      onSelectRange(newRange);
     }
   };
 
@@ -58,7 +58,7 @@ export function TimelineFilter({ years, selectedYear, onSelectYear }: TimelineFi
             animate={{ opacity: 1, scale: 1 }}
             onClick={() => {
               setSliderRange([minYear, maxYear]);
-              onSelectYear(null);
+              onSelectRange(null);
             }}
             className="w-full py-2 text-sm font-medium text-primary hover:bg-primary/10 rounded-lg transition-colors"
           >
