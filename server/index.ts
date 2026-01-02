@@ -2,6 +2,10 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import mongoose from 'mongoose';
+import { PROFILE_SCHEMA_DEF, Profile } from '../shared/schema';
+import 'dotenv/config';  // Add this to load .env
+
 
 const app = express();
 const httpServer = createServer(app);
@@ -11,17 +15,6 @@ declare module "http" {
     rawBody: unknown;
   }
 }
-
-app.use(
-  express.json({
-    verify: (req, _res, buf) => {
-      req.rawBody = buf;
-    },
-  }),
-);
-
-app.use(express.urlencoded({ extended: false }));
-
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -32,6 +25,50 @@ export function log(message: string, source = "express") {
 
   console.log(`${formattedTime} [${source}] ${message}`);
 }
+// Connect to MongoDB (add to .env: MONGODB_URI=your_connection_string)
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/resumeChallenge';
+log(`Connecting to MongoDB: ${mongoUri}`);
+//mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/resumeChallenge')
+mongoose.connect(mongoUri)
+.then(() => log('MongoDB connected'))
+.catch(err => log(`MongoDB connection error: ${err.message}`));
+
+// Define Profile schema (simple model for profile details)
+const profileSchema = new mongoose.Schema<Profile>(PROFILE_SCHEMA_DEF, {collection: 'profiles'});
+const Profile = mongoose.model('Profile', profileSchema);
+
+// Add profile API route before registerRoutes
+app.get('/api/profile/:id?', async (req: Request, res: Response) => {
+  try {
+    let { id } = req.params;
+
+    if (!id) {
+      id = '6956b7cd81a40bf30eb425e7';  // Replace with actual ObjectId
+      log(`Using hardcoded id: ${id}`);
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      log(`Invalid ObjectId: ${id}`);
+      return res.status(400).json({ message: 'Invalid ObjectId' });
+    }
+    const profile = await Profile.findById(id);
+    log(`Profile found: ${!!profile}`);  // Debug log
+    if (!profile) return res.status(404).json({ message: 'Profile not found' });
+    res.json(profile);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.use(
+  express.json({
+    verify: (req, _res, buf) => {
+      req.rawBody = buf;
+    },
+  }),
+);
+
+app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -89,7 +126,7 @@ app.use((req, res, next) => {
     {
       port,
       host: "0.0.0.0",
-      reusePort: true,
+    //  reusePort: true,
     },
     () => {
       log(`serving on port ${port}`);

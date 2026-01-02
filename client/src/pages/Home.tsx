@@ -4,15 +4,40 @@ import { SkillsFilter } from "@/components/resume/SkillsFilter";
 import { TimelineFilter } from "@/components/resume/TimelineFilter";
 import { ProjectList } from "@/components/resume/ProjectList";
 import { Certifications } from "@/components/resume/Certifications";
-import { PROJECTS, SKILLS, YEARS, PROFILE } from "@/lib/data";
+import { PROJECTS, SKILLS, YEARS } from "@/lib/data";
 import { downloadResumePDF } from "@/lib/pdfExport";
 import { motion } from "framer-motion";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect } from 'react';
+import { Profile } from '../../../shared/schema';
+/*
+interface Profile {
+  fullName: String,
+  designation: String,
+  role: String,
+  imageURL: String,
+  introduction: String,
+  skills: {
+    type: [String],
+    default: []
+  }
+}*/
 
 export default function Home() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedYearRange, setSelectedYearRange] = useState<[number, number] | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  
+  // Add useEffect to fetch profile (if not already present)
+
+  useEffect(() => {
+    fetch('/api/profile')  // Or '/api/profile/your-id' if needed
+      .then(res => res.json())
+      .then(data => setProfile(data))
+      .catch(err => console.error(err));
+  }, []);
+
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills(prev => 
@@ -33,6 +58,11 @@ export default function Home() {
       return matchesYear && matchesSkills;
     });
   }, [selectedYearRange, selectedSkills]);
+  // Add loading check to prevent null access
+  if (!profile) { 
+      return (<div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 lg:p-12 flex items-center justify-center">
+        Loading...
+      </div>); }
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 lg:p-12">
@@ -68,15 +98,15 @@ export default function Home() {
           <section className="space-y-4">
             <div>
               <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tight text-foreground">
-                {PROFILE.name}
+                {profile.fullName}
               </h1>
               <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mt-2">
-                {PROFILE.title}
+                {profile.designation}
               </h2>
             </div>
             
             <p className="text-lg leading-relaxed text-foreground/80 max-w-2xl">
-              {PROFILE.intro}
+              {profile.introduction}
             </p>
 
             <Certifications />
@@ -85,7 +115,7 @@ export default function Home() {
           {/* Section 2: Skills Filter */}
           <section>
             <SkillsFilter 
-              allSkills={SKILLS} 
+              allSkills={profile.skills} 
               selectedSkills={selectedSkills} 
               onToggleSkill={toggleSkill} 
             />
@@ -115,4 +145,6 @@ export default function Home() {
       </div>
     </div>
   );
+ 
 }
+  

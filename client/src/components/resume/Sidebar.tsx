@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { AWARDS, PROFILE } from "@/lib/data";
+import { AWARDS } from "@/lib/data";
+import { PROFILE_SCHEMA_DEF } from "../../../../shared/schema";
 import { useState, useRef } from "react";
 import headshotDefault from "@assets/generated_images/professional_headshot_of_a_cloud_engineer.png";
 
@@ -58,28 +59,28 @@ export function Sidebar() {
           <h3 className="font-heading font-semibold text-lg mb-4 text-foreground/80">Contact</h3>
           
           <div className="space-y-3 text-sm">
-            <a href={`mailto:${PROFILE.email}`} className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors group">
+            <a href={`mailto:${PROFILE_SCHEMA_DEF.email}`} className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors group">
               <div className="p-2 rounded-md bg-primary/10 group-hover:bg-primary/20 transition-colors">
                 <Mail className="w-4 h-4 text-primary" />
               </div>
-              <span>{PROFILE.email}</span>
+              <span>{PROFILE_SCHEMA_DEF.email}</span>
             </a>
             
             <div className="flex items-center gap-3 text-muted-foreground group">
               <div className="p-2 rounded-md bg-primary/10 transition-colors">
                 <MapPin className="w-4 h-4 text-primary" />
               </div>
-              <span>{PROFILE.location}</span>
+              <span>{PROFILE_SCHEMA_DEF.location}</span>
             </div>
             
             <Separator className="my-4" />
             
             <div className="flex gap-2 justify-center">
               <Button variant="outline" size="icon" asChild className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all">
-                <a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin className="w-4 h-4" /></a>
+                <a href={PROFILE_SCHEMA_DEF.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin className="w-4 h-4" /></a>
               </Button>
               <Button variant="outline" size="icon" asChild className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all">
-                <a href={PROFILE.github} target="_blank" rel="noopener noreferrer"><Github className="w-4 h-4" /></a>
+                <a href={PROFILE_SCHEMA_DEF.github} target="_blank" rel="noopener noreferrer"><Github className="w-4 h-4" /></a>
               </Button>
             </div>
           </div>

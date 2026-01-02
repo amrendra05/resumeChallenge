@@ -13,15 +13,27 @@ export interface Project {
   type: "Cloud Migration" | "DevOps" | "App Development" | "Security";
 }
 
-export const PROFILE = {
-  name: "Alex Cloudwalker",
-  title: "Senior Cloud Architect & DevOps Engineer",
-  intro: "Specializing in scalable cloud infrastructure, serverless architectures, and automated delivery pipelines. I turn complex infrastructure problems into elegant, code-defined solutions.",
+export interface Profile {
+  id: string;
+  fullName: string;
+  designation: string;
+  role: string;
+  imageURL: string;
+  introduction: string;
+  skills: string[];
+  //description: string;
+  //type: "Cloud Migration" | "DevOps" | "App Development" | "Security";
+}
+
+export const PROFILE_SCHEMA_DEF = {
+  fullName: "Alex Cloudwalker",
+  designation: "Senior Cloud Architect & DevOps Engineer",
+  role: "Specializing in scalable cloud infrastructure, serverless architectures, and automated delivery pipelines. I turn complex infrastructure problems into elegant, code-defined solutions.",
   email: "alex.cloud@example.com",
-  location: "San Francisco, CA",
+  location: "Nieuwegein, The Netherlands",
   github: "https://github.com",
   linkedin: "https://linkedin.com",
-  headshot: "@assets/generated_images/professional_headshot_of_a_cloud_engineer.png"
+  imageURL: "@assets/generated_images/professional_headshot_of_a_cloud_engineer.png"
 };
 
 export const PROJECTS: Project[] = [
