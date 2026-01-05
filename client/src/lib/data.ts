@@ -1,4 +1,5 @@
 import { Cloud, Shield, Server, Database, Code, Layout, Globe, Cpu } from "lucide-react";
+//import { Types } from "mongoose";
 
 export interface Project {
   id: string;
@@ -21,6 +22,18 @@ export interface Profile {
   imageURL: string;
   introduction: string;
   skills: string[];
+  linkedIn: string;
+  githubLink: string;
+  //description: string;
+  //type: "Cloud Migration" | "DevOps" | "App Development" | "Security";
+}
+
+export interface Contact {
+  //id: string;
+  profileId: string;
+  emailId: string;
+  phone: string;
+  address: string;
   //description: string;
   //type: "Cloud Migration" | "DevOps" | "App Development" | "Security";
 }
@@ -31,9 +44,17 @@ export const PROFILE_SCHEMA_DEF = {
   role: "Specializing in scalable cloud infrastructure, serverless architectures, and automated delivery pipelines. I turn complex infrastructure problems into elegant, code-defined solutions.",
   email: "alex.cloud@example.com",
   location: "Nieuwegein, The Netherlands",
-  github: "https://github.com",
-  linkedin: "https://linkedin.com",
+  githubLink: "https://github.com",
+  linkedIn: "https://linkedin.com",
   imageURL: "@assets/generated_images/professional_headshot_of_a_cloud_engineer.png"
+};
+
+export const CONTACT_SCHEMA_DEF = {
+  //id: Types.ObjectId,
+  profileId: String, //"Senior Cloud Architect & DevOps Engineer",
+  emailId: String, //"alex.cloud@example.com",
+  phone: String, //"Nieuwegein, The Netherlands",
+  address: String, //"https://github.com",
 };
 
 export const PROJECTS: Project[] = [

@@ -1,19 +1,25 @@
 import { motion } from "framer-motion";
-import { Mail, MapPin, Linkedin, Github, Trophy, ExternalLink, Camera } from "lucide-react";
+import { Mail, MapPin, Linkedin, Github, Trophy, ExternalLink, Camera, Contact } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { AWARDS } from "@/lib/data";
-import { PROFILE_SCHEMA_DEF } from "../../../../shared/schema";
-import { useState, useRef } from "react";
-import headshotDefault from "@assets/generated_images/professional_headshot_of_a_cloud_engineer.png";
+//import { AWARDS } from "@/lib/data";
+import { useState, useRef, useEffect } from "react";
+import headshotDefault from "/Apps/resumeChallenge/resumeChallenge/attached_assets/generated_images/IMG_3489.png"; // Updated path to match the alias
+import { Achievement, Profile } from '../../../../shared/schema';
+import { Contacts } from '../../../../shared/schema';
+import { log } from "console";
+//import { log } from "../../../../server/index";
 
 export function Sidebar() {
   const [headshot, setHeadshot] = useState(headshotDefault);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [contacts, setContacts] = useState<Contacts[]>([]);
+  const [loading, setLoading] = useState(true);
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -24,7 +30,41 @@ export function Sidebar() {
       reader.readAsDataURL(file);
     }
   };
+/*
+  useEffect(() => {
+    fetch('/api/profile')  // Or '/api/profile/your-id' if needed
+      .then(res => res.json())
+      .then(data => setProfile(data))
+      .catch(err => console.error(err));
+  }, []);
+*/
 
+useEffect(() => {
+  async function loadData() {
+    setLoading(true);
+    try {
+      const profileRes = await fetch('/api/profile');
+      const profileData = await profileRes.json();
+     // console.log(`Profile Data: ${profileData._id}`); // Debug log
+      setProfile(profileData);
+
+      //setAchievements(profileData.achievements || []);
+      const contactsRes = await fetch(`/api/contacts?profileId=${profileData._id}`);
+      setContacts(await contactsRes.json());
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  loadData();
+}, []);
+
+  if (!profile || contacts.length === 0 ) { 
+      return (<div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 lg:p-12 flex items-center justify-center">
+        Loading...
+      </div>); }
   return (
     <motion.aside 
       initial={{ opacity: 0, x: -20 }}
@@ -57,33 +97,33 @@ export function Sidebar() {
       <Card className="overflow-hidden border-none shadow-md bg-card/50 backdrop-blur-sm">
         <CardContent className="p-6 space-y-4">
           <h3 className="font-heading font-semibold text-lg mb-4 text-foreground/80">Contact</h3>
-          
+   {
           <div className="space-y-3 text-sm">
-            <a href={`mailto:${PROFILE_SCHEMA_DEF.email}`} className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors group">
+            <a href={`mailto:${contacts[0].emailId}`} className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors group">
               <div className="p-2 rounded-md bg-primary/10 group-hover:bg-primary/20 transition-colors">
                 <Mail className="w-4 h-4 text-primary" />
               </div>
-              <span>{PROFILE_SCHEMA_DEF.email}</span>
+              <span>{contacts[0].emailId}</span>
             </a>
             
             <div className="flex items-center gap-3 text-muted-foreground group">
               <div className="p-2 rounded-md bg-primary/10 transition-colors">
                 <MapPin className="w-4 h-4 text-primary" />
               </div>
-              <span>{PROFILE_SCHEMA_DEF.location}</span>
+              <span>{contacts[0].address}</span>
             </div>
-            
+
             <Separator className="my-4" />
             
             <div className="flex gap-2 justify-center">
               <Button variant="outline" size="icon" asChild className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all">
-                <a href={PROFILE_SCHEMA_DEF.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin className="w-4 h-4" /></a>
+                <a href={profile.linkedIn} target="_blank" rel="noopener noreferrer"><Linkedin className="w-4 h-4" /></a>
               </Button>
               <Button variant="outline" size="icon" asChild className="rounded-full hover:bg-primary hover:text-primary-foreground transition-all">
-                <a href={PROFILE_SCHEMA_DEF.github} target="_blank" rel="noopener noreferrer"><Github className="w-4 h-4" /></a>
+                <a href={profile.githubLink} target="_blank" rel="noopener noreferrer"><Github className="w-4 h-4" /></a>
               </Button>
             </div>
-          </div>
+          </div>}
         </CardContent>
       </Card>
 
@@ -97,7 +137,7 @@ export function Sidebar() {
         </h3>
         
         <div className="grid gap-3">
-          {AWARDS.map((award, index) => (
+          {achievements.map((award, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 10 }}

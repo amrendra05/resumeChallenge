@@ -52,7 +52,7 @@ app.get('/api/profile/:id?', async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid ObjectId' });
     }
     const profile = await Profile.findById(id);
-    log(`Profile found: ${!!profile}`);  // Debug log
+    log(`Profile found ****: ${!!profile}`);  // Debug log
     if (!profile) return res.status(404).json({ message: 'Profile not found' });
     res.json(profile);
   } catch (err: any) {
