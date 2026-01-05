@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import mongoose from 'mongoose';
 //import { PROJECTS_SCHEMA_DEF, Project } from '../shared/schema';
 import { CONTACT_SCHEMA_DEF, Contacts } from '../shared/schema';
-//import { log } from "./index";
+
 
 // Connect to MongoDB (add to .env: MONGODB_URI=your_connection_string)
 //const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/resumeChallenge';
@@ -16,6 +16,8 @@ import { CONTACT_SCHEMA_DEF, Contacts } from '../shared/schema';
 //const projectSchema = new mongoose.Schema<Project>(PROJECTS_SCHEMA_DEF, {collection: 'profileProjects'});
 //const Projects = mongoose.model('Projects', projectSchema);
 
+// Connection to MongoDB already established in server/index.ts. If needed, we can reuse that connection here.
+
 const contactSchema = new mongoose.Schema<Contacts>(CONTACT_SCHEMA_DEF, {collection: 'contacts'});
 const Contacts = mongoose.model('Contacts', contactSchema);
 
@@ -27,10 +29,10 @@ export const dataprocessor = {
     return await Projects.create(data);
   },*/
   getContacts: async (profileId?: string) => {
-    console.log(`Contact function found: in the data processor ${profileId}`); 
+    //console.log(`Contact function found: in the data processor ${profileId}`); 
    if (profileId) {
      
-       console.log(`Isnide condition ${profileId}`);
+       //console.log(`Isnide condition ${profileId}`);
        return await Contacts.find({profileId: profileId});
        //console.log(`after db call ${profileId}`);
     }

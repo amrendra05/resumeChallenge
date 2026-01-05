@@ -10,7 +10,6 @@ import { useState, useRef, useEffect } from "react";
 import headshotDefault from "/Apps/resumeChallenge/resumeChallenge/attached_assets/generated_images/IMG_3489.png"; // Updated path to match the alias
 import { Achievement, Profile } from '../../../../shared/schema';
 import { Contacts } from '../../../../shared/schema';
-import { log } from "console";
 //import { log } from "../../../../server/index";
 
 export function Sidebar() {
