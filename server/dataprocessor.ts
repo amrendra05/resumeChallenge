@@ -1,7 +1,6 @@
-import { ObjectId } from "mongodb";
 import mongoose from 'mongoose';
-//import { PROJECTS_SCHEMA_DEF, Project } from '../shared/schema';
-import { CONTACT_SCHEMA_DEF, Contacts } from '../shared/schema';
+import { CONTACT_SCHEMA_DEF, PROJECT_SCHEMA_DEF, Contacts, Project} from '../shared/schema';
+import { ACHIEVEMENT_SCHEMA_DEF, CERTIFICATION_SCHEMA_DEF, Achievement, Certification} from '../shared/schema';
 
 
 // Connect to MongoDB (add to .env: MONGODB_URI=your_connection_string)
@@ -21,6 +20,15 @@ import { CONTACT_SCHEMA_DEF, Contacts } from '../shared/schema';
 const contactSchema = new mongoose.Schema<Contacts>(CONTACT_SCHEMA_DEF, {collection: 'contacts'});
 const Contacts = mongoose.model('Contacts', contactSchema);
 
+const projectSchema = new mongoose.Schema<Project>(PROJECT_SCHEMA_DEF, {collection: 'profileProjects'});
+const Projects = mongoose.model('Projects', projectSchema);
+
+const achievementSchema = new mongoose.Schema<Achievement>(ACHIEVEMENT_SCHEMA_DEF, {collection: 'achievements'});
+const Achievements = mongoose.model('Achievements', achievementSchema);
+
+const certificationSchema = new mongoose.Schema<Certification>(CERTIFICATION_SCHEMA_DEF, {collection: 'certifications'});
+const Certifications = mongoose.model('Certifications', certificationSchema);
+
 export const dataprocessor = {
  /* getProjects: async () => {
     return await Projects.find();
@@ -37,7 +45,43 @@ export const dataprocessor = {
        //console.log(`after db call ${profileId}`);
     }
    // return await Contacts.find();
-    return '{ok: "from dataprocessore done"}';
+    return '{ok: "from dataprocessore Contact done"}';
+  },
+
+  getProjects: async (profileId?: string) => {
+    //console.log(`Contact function found: in the data processor ${profileId}`); 
+   if (profileId) {
+     
+       //console.log(`Isnide condition ${profileId}`);
+       return await Projects.find({profileId: profileId});
+       //console.log(`after db call ${profileId}`);
+    }
+   // return await Contacts.find();
+    return '{ok: "from dataprocessore Project done"}';
+  },
+
+  getAchievements: async (profileId?: string) => {
+    //console.log(`Contact function found: in the data processor ${profileId}`); 
+   if (profileId) {
+     
+       //console.log(`Isnide condition ${profileId}`);
+       return await Achievements.find({profileId: profileId});
+       //console.log(`after db call ${profileId}`);
+    }
+   // return await Contacts.find();
+    return '{ok: "from dataprocessore Achievement done"}';
+  },
+
+  getCertification: async (profileId?: string) => {
+    //console.log(`Contact function found: in the data processor ${profileId}`); 
+   if (profileId) {
+     
+       //console.log(`Isnide condition ${profileId}`);
+       return await Certifications.find({profileId: profileId});
+       //console.log(`after db call ${profileId}`);
+    }
+   // return await Contacts.find();
+    return '{ok: "from dataprocessore Certification done"}';
   },
 
 };

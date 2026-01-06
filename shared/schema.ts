@@ -1,7 +1,7 @@
+import { profile } from "console";
 import { sql } from "drizzle-orm";
 import { pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
-import { Types } from "mongoose";
 import { z } from "zod";
 
 export const users = pgTable("users", {
@@ -33,14 +33,18 @@ export interface Profile {
 }
 
 export interface Project{
-  //id: string;
+  id: string;
+  profileId: string;
   title: string;
   client: string;
   summary: string;
   description: string;
   roles: string[];
   skills: string[];
-  year: number;
+  beginYear: number;
+  endYear: string;
+  beginMonth: string;
+  endMonth: string;
   type: string;
 }
 
@@ -55,10 +59,20 @@ export interface Contacts {
 }
 
 export interface Achievement {
-  //id: Types.ObjectId;
+  id: string;
+  profileId: string;
   title: string;
   issuer: string;
   year: string;
+}
+
+export interface Certification {
+  id: string;
+  profileId: string;
+  name: string;
+  icon: string;
+  certLink: string;
+  color: string;
 }
 
 export const PROFILE_SCHEMA_DEF = {
@@ -77,21 +91,38 @@ export const CONTACT_SCHEMA_DEF = {
   profileId:  String, //"Senior Cloud Architect & DevOps Engineer",
   emailId: String, //"alex.cloud@example.com",
   phone: String, //"Nieuwegein, The Netherlands",
-  address: String, //"https://github.com",
+  address: String //"https://github.com",
 };
 
-export const PROJECTS_SCHEMA_DEF =   {
-    //id: String, //"1",
-    title: String, //"Enterprise Cloud Migration",
-    client: String, //"Global FinTech Corp",
-    summary: String, //"Migrated legacy on-premise infrastructure to AWS, achieving 40% cost reduction.",
-    description: String, //"Led the migration of a mission-critical trading platform from on-premise data centers to AWS. Designed a multi-region architecture for high availability and disaster recovery.",
-    type: String, //"Cloud Migration",
-  };
+export const PROJECT_SCHEMA_DEF = {
+  id: String, // Unique identifier for the project
+  profileId: String, //"Unique identifier for the profile",
+  title: String, //"Lead consultant for Cloud Migration",
+  client: String, //"Customer Inc ",
+  summary: String, 
+  roles: [String], //"Architect","Lead Developer"
+  description: String, 
+  skills: [String],
+  beginYear: Number,
+  beginMonth: String,
+  endYear: String,
+  endMonth: String,
+  type: String //"Cloud Migration" | "DevOps" | "App Development" | "Security"
+};
 
-  export const ACHIEVEMENTS_SCHEMA_DEF =   {
-    //id: String, //"1",
+  export const ACHIEVEMENT_SCHEMA_DEF =   {
+    id: String, //"1",
+    profileId: String, //"Unique identifier for the profile",
     title: String, //"Enterprise Cloud Migration",
     issuer: String, //"Global FinTech Corp",
     year: String, //"Migrated legacy on-premise infrastructure to AWS, achieving 40% cost reduction.",
+  };
+
+    export const CERTIFICATION_SCHEMA_DEF =   {
+    id: String, //"1",
+    color: String, //"#FF5733",
+    profileId: String, //"Unique identifier for the profile",
+    name: String, //"Enterprise Cloud Migration",
+    icon: String, //"Global FinTech Corp",
+    certLink: String, //"Migrated legacy on-premise infrastructure to AWS, achieving 40% cost reduction.",
   };

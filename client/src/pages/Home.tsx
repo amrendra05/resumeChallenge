@@ -4,13 +4,14 @@ import { SkillsFilter } from "@/components/resume/SkillsFilter";
 import { TimelineFilter } from "@/components/resume/TimelineFilter";
 import { ProjectList } from "@/components/resume/ProjectList";
 import { Certifications } from "@/components/resume/Certifications";
-import { PROJECTS, SKILLS, YEARS } from "@/lib/data";
+import { YEARS } from "@/lib/data";
 import { downloadResumePDF } from "@/lib/pdfExport";
 import { motion } from "framer-motion";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect } from 'react';
-import { Profile } from '../../../shared/schema';
+import { Profile, Certification, Project } from '../../../shared/schema';
+
 /*
 interface Profile {
   fullName: String,
@@ -28,9 +29,11 @@ export default function Home() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedYearRange, setSelectedYearRange] = useState<[number, number] | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [certification, setCertification] = useState<Certification | null>(null);
+  const [loading, setLoading] = useState(true);
   // Add useEffect to fetch profile (if not already present)
-
+/*
   useEffect(() => {
     fetch('/api/profile')  // Or '/api/profile/your-id' if needed
       .then(res => res.json())
@@ -38,7 +41,31 @@ export default function Home() {
       .catch(err => console.error(err));
   }, []);
 
+*/
+useEffect(() => {
+  async function loadData() {
+    setLoading(true);
+    try {
+      const profileRes = await fetch('/api/profile');
+      const profileData = await profileRes.json();
+     // console.log(`Profile Data: ${profileData._id}`); // Debug log
+      setProfile(profileData);
 
+      const projectsRes = await fetch(`/api/projects?profileId=${profileData._id}`);
+      setProjects(await projectsRes.json());
+
+      const certificationsRes = await fetch(`/api/certifications?profileId=${profileData._id}`);
+      setCertification(await certificationsRes.json());
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  loadData();
+}, []);
   const toggleSkill = (skill: string) => {
     setSelectedSkills(prev => 
       prev.includes(skill) 
@@ -48,18 +75,18 @@ export default function Home() {
   };
 
   const filteredProjects = useMemo(() => {
-    return PROJECTS.filter(project => {
+    return projects?.filter((project: Project) => {
       const matchesYear = selectedYearRange 
-        ? project.year >= selectedYearRange[0] && project.year <= selectedYearRange[1]
+        ? project.beginYear >= selectedYearRange[0] && project.beginYear <= selectedYearRange[1]
         : true;
       const matchesSkills = selectedSkills.length > 0 
         ? selectedSkills.every(skill => project.skills.includes(skill))
         : true;
       return matchesYear && matchesSkills;
     });
-  }, [selectedYearRange, selectedSkills]);
+  }, [projects, selectedYearRange, selectedSkills]);
   // Add loading check to prevent null access
-  if (!profile) { 
+  if (!profile ) { 
       return (<div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 lg:p-12 flex items-center justify-center">
         Loading...
       </div>); }
@@ -109,7 +136,7 @@ export default function Home() {
               {profile.introduction}
             </p>
 
-            <Certifications />
+           <Certifications />
           </section>
 
           {/* Section 2: Skills Filter */}

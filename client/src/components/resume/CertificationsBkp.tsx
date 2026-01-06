@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { CertificationModal } from "./CertificationModal";
 import { motion } from "framer-motion";
 import { Certification } from "../../../../shared/schema";
-import { Cloud, Server } from "lucide-react";
+import { Cloud, Server, LucideIcon } from "lucide-react";
 
 /* ----------------------------------
    ICON MAP (single source of truth)
@@ -69,6 +69,7 @@ export function Certifications() {
                 cert.icon && isIconName(cert.icon)
                   ? ICONS_MAP[cert.icon]
                   : null;
+
               return (
                 <Tooltip key={cert.id}>
                   <TooltipTrigger asChild>
@@ -84,13 +85,9 @@ export function Certifications() {
                       }`}
                     >
                       <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                      <img src={cert.certLink} alt={cert.name} className="w-20 h-20" />
-                     {/*IconComponent ? (
-                        <IconComponent
-                          size={24}
-                          strokeWidth={2}
-                          className={`${cert.icon}`} // Tailwind color works!
-                        />) : <img src={cert.certLink} alt={cert.name} className="w-6 h-6" />*/}
+                      {IconComponent && (
+                        <IconComponent className="w-6 h-6 text-white relative z-10" />
+                      )}
                     </motion.button>
                   </TooltipTrigger>
 

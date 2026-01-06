@@ -1,10 +1,14 @@
 import { ProjectCard } from "./ProjectCard";
-import { Project } from "@/lib/data";
+//import { Project } from "@/lib/data";
+//import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Project } from '../../../../shared/schema';
 
 interface ProjectListProps {
-  projects: Project[];
+ projects: Project[];
+
 }
+
 
 export function ProjectList({ projects }: ProjectListProps) {
   if (projects.length === 0) {
@@ -18,8 +22,8 @@ export function ProjectList({ projects }: ProjectListProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <AnimatePresence mode="popLayout">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
+        {projects.map((project: Project) => (
+          <ProjectCard key={project.id} projects={[project]} />
         ))}
       </AnimatePresence>
     </div>

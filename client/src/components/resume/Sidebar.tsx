@@ -8,8 +8,10 @@ import { Separator } from "@/components/ui/separator";
 //import { AWARDS } from "@/lib/data";
 import { useState, useRef, useEffect } from "react";
 import headshotDefault from "/Apps/resumeChallenge/resumeChallenge/attached_assets/generated_images/IMG_3489.png"; // Updated path to match the alias
-import { Achievement, Profile } from '../../../../shared/schema';
+import { Achievement, Certification, Profile } from '../../../../shared/schema';
 import { Contacts } from '../../../../shared/schema';
+//import { Project } from '../../../../shared/schema';
+import { AWARDS } from "@/lib/data";
 //import { log } from "../../../../server/index";
 
 export function Sidebar() {
@@ -18,6 +20,7 @@ export function Sidebar() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [contacts, setContacts] = useState<Contacts[]>([]);
+  const [certifications, setCertifications] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,6 +53,10 @@ useEffect(() => {
       //setAchievements(profileData.achievements || []);
       const contactsRes = await fetch(`/api/contacts?profileId=${profileData._id}`);
       setContacts(await contactsRes.json());
+
+      const achievementsRes = await fetch(`/api/achievements?profileId=${profileData._id}`);
+      setAchievements(await achievementsRes.json());
+
     } catch (err) {
       console.error(err);
     } finally {
@@ -60,7 +67,7 @@ useEffect(() => {
   loadData();
 }, []);
 
-  if (!profile || contacts.length === 0 ) { 
+  if (!profile || contacts.length === 0) { 
       return (<div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 lg:p-12 flex items-center justify-center">
         Loading...
       </div>); }
@@ -136,12 +143,12 @@ useEffect(() => {
         </h3>
         
         <div className="grid gap-3">
-          {achievements.map((award, index) => (
+          {achievements.map((achievement, index) => (
             <motion.div
-              key={index}
+              key={achievement.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + (index * 0.1) }}
+              transition={{ delay: 0.2 + (index+1 * 0.1) }}
               whileHover={{ x: 4 }}
             >
               <Card className="border-l-4 border-l-amber-500 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-amber-50/50 to-transparent dark:from-amber-950/20 dark:to-transparent">
@@ -149,10 +156,10 @@ useEffect(() => {
                   <div className="flex items-start gap-2">
                     <Trophy className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <div className="font-semibold text-foreground">{award.title}</div>
+                      <div className="font-semibold text-foreground">{achievement.title}</div>
                       <div className="text-sm text-muted-foreground mt-1 flex justify-between">
-                        <span>{award.issuer}</span>
-                        <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-normal">{award.year}</Badge>
+                        <span>{achievement.issuer}</span>
+                        <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-normal">{achievement.year}</Badge>
                       </div>
                     </div>
                   </div>

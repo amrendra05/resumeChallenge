@@ -1,4 +1,5 @@
-import { Project } from "@/lib/data";
+//import { Project } from "@/lib/data";
+import { Project } from '../../../../shared/schema';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,12 +8,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { motion } from "framer-motion";
 
 interface ProjectCardProps {
-  project: Project;
+  projects: Project[];
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ projects }: ProjectCardProps) {
+  
   return (
+    projects.map((project: Project) => (
     <motion.div
+      key={project.id}
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -25,7 +29,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
               {project.client.substring(0, 2).toUpperCase()}
             </div>
-            <Badge variant="outline" className="font-mono text-xs">{project.year}</Badge>
+            <Badge variant="outline" className="font-mono text-xs">{project.beginYear}</Badge>
           </div>
           <CardTitle className="text-lg font-heading leading-tight group-hover:text-primary transition-colors">
             {project.title}
@@ -69,7 +73,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     <DialogDescription className="flex items-center gap-2 mt-1">
                       <Briefcase className="w-4 h-4" /> {project.client} 
                       <span className="mx-1">•</span>
-                      <Calendar className="w-4 h-4" /> {project.year}
+                      <Calendar className="w-4 h-4" /> {project.beginYear}
                     </DialogDescription>
                   </div>
                 </div>
@@ -106,5 +110,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </CardContent>
       </Card>
     </motion.div>
+    ))
   );
 }
+
