@@ -54,8 +54,8 @@ useEffect(() => {
       const projectsRes = await fetch(`/api/projects?profileId=${profileData._id}`);
       setProjects(await projectsRes.json());
 
-      const certificationsRes = await fetch(`/api/certifications?profileId=${profileData._id}`);
-      setCertification(await certificationsRes.json());
+      //const certificationsRes = await fetch(`/api/certifications?profileId=${profileData._id}`);
+      //setCertification(await certificationsRes.json());
 
     } catch (err) {
       console.error(err);

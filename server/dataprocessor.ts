@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
-import { CONTACT_SCHEMA_DEF, PROJECT_SCHEMA_DEF, Contacts, Project} from '../shared/schema';
+import { CONTACT_SCHEMA_DEF, PROJECT_SCHEMA_DEF, Contacts, Project, Profile, PROFILE_SCHEMA_DEF} from '../shared/schema';
 import { ACHIEVEMENT_SCHEMA_DEF, CERTIFICATION_SCHEMA_DEF, Achievement, Certification} from '../shared/schema';
+import { log } from 'server';
 
 
 // Connect to MongoDB (add to .env: MONGODB_URI=your_connection_string)
@@ -8,10 +9,10 @@ import { ACHIEVEMENT_SCHEMA_DEF, CERTIFICATION_SCHEMA_DEF, Achievement, Certific
 
 //console.log('MongoDB connected ${mongoUri}');
 
-/*mongoose.connect(mongoUri)
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error(`MongoDB connection error: ${err.message}`));
-*/
+//mongoose.connect(mongoUri)
+//.then(() => console.log('MongoDB connected'))
+//.catch(err => console.error(`MongoDB connection error: ${err.message}`));
+
 //const projectSchema = new mongoose.Schema<Project>(PROJECTS_SCHEMA_DEF, {collection: 'profileProjects'});
 //const Projects = mongoose.model('Projects', projectSchema);
 
@@ -28,6 +29,9 @@ const Achievements = mongoose.model('Achievements', achievementSchema);
 
 const certificationSchema = new mongoose.Schema<Certification>(CERTIFICATION_SCHEMA_DEF, {collection: 'certifications'});
 const Certifications = mongoose.model('Certifications', certificationSchema);
+
+const profileSchema = new mongoose.Schema<Profile>(PROFILE_SCHEMA_DEF, {collection: 'profiles'});
+const Profiles = mongoose.model('Profiles', profileSchema);
 
 export const dataprocessor = {
  /* getProjects: async () => {
@@ -83,5 +87,22 @@ export const dataprocessor = {
    // return await Contacts.find();
     return '{ok: "from dataprocessore Certification done"}';
   },
+
+    getProfile: async (profileId?: string) => {
+    //console.log(`Contact function found: in the data processor ${profileId}`); 
+   if (profileId) {
+        if (!mongoose.Types.ObjectId.isValid(profileId)) {
+          log(`Invalid ObjectId: ${profileId}`);
+          return ({ message: 'Invalid ObjectId' });
+        }
+        const profile = await Profiles.findById(profileId);
+        log(`Profile found ****: ${!!profile}`);  // Debug log
+        if (!profile) return ({ message: 'Profile not found' });
+        return profile;
+      } else {  
+        
+        //console.log(`after db call ${profileId}`);
+      }
+    },
 
 };

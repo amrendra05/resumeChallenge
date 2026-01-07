@@ -73,6 +73,24 @@ export async function registerRoutes(
        }
         //res.json({ok: 'done for certitication'});
   });
+
+     app.get("/id/:profileId?", async (req, res) => {
+          log(`Contact function found: ${req.query.id}`); 
+       let profileId = req.query.profileId as string | undefined;
+          log(`Contact function 2nd step: ${profileId}`);
+       if (!profileId) {
+            profileId = '6956b7cd81a40bf30eb425e7';  // Replace with actual ObjectId
+            log(`Using hardcoded id: ${profileId}`);
+          }
+         const profile = await dataprocessor.getProfile(profileId);
+         //log(`Profile found: ${!!profile}`);  // Debug log
+       if (!profile) return res.status(404).json({ message: 'Profile not found' });
+       else {
+        // HTTP response got to calling TSX    res.json(certifications);
+        res.json(profile);  
+       }
+        //res.json({ok: 'done for certitication'});
+  }); 
   //log(`In the route: $`); 
   return httpServer;
 }
