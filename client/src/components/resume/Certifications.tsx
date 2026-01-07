@@ -70,7 +70,7 @@ export function Certifications() {
                   ? ICONS_MAP[cert.icon]
                   : null;
               return (
-                <Tooltip key={cert.id}>
+                <Tooltip key={cert._id}>
                   <TooltipTrigger asChild>
                     <motion.button
                       onClick={() => setSelectedCert(index)}

@@ -16,7 +16,7 @@ export function ProjectCard({ projects }: ProjectCardProps) {
   return (
     projects.map((project: Project) => (
     <motion.div
-      key={project.id}
+      key={project._id}
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}

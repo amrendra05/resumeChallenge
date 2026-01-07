@@ -46,6 +46,7 @@ export const PROFILE_SCHEMA_DEF = {
   location: "Nieuwegein, The Netherlands",
   githubLink: "https://github.com",
   linkedIn: "https://linkedin.com",
+  phone: "+1 555-123-4567",
   imageURL: "@assets/generated_images/professional_headshot_of_a_cloud_engineer.png"
 };
 

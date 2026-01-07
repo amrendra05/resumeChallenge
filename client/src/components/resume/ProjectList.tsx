@@ -23,7 +23,7 @@ export function ProjectList({ projects }: ProjectListProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <AnimatePresence mode="popLayout">
         {projects.map((project: Project) => (
-          <ProjectCard key={project.id} projects={[project]} />
+          <ProjectCard key={project._id} projects={[project]} />
         ))}
       </AnimatePresence>
     </div>

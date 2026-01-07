@@ -33,7 +33,7 @@ export interface Profile {
 }
 
 export interface Project{
-  id: string;
+  _id: string;
   profileId: string;
   title: string;
   client: string;
@@ -59,7 +59,7 @@ export interface Contacts {
 }
 
 export interface Achievement {
-  id: string;
+  _id: string;
   profileId: string;
   title: string;
   issuer: string;
@@ -67,7 +67,7 @@ export interface Achievement {
 }
 
 export interface Certification {
-  id: string;
+  _id: string;
   profileId: string;
   name: string;
   icon: string;

@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { Mail, MapPin, Linkedin, Github, Trophy, ExternalLink, Camera, Contact } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Mail, MapPin, Linkedin, Github, Trophy, ExternalLink, Camera, Contact, RefreshCw } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,8 @@ export function Sidebar() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [contacts, setContacts] = useState<Contacts[]>([]);
-  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [countryFlag, setCountryFlag] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,27 +33,62 @@ export function Sidebar() {
       reader.readAsDataURL(file);
     }
   };
-/*
-  useEffect(() => {
-    fetch('/api/profile')  // Or '/api/profile/your-id' if needed
-      .then(res => res.json())
-      .then(data => setProfile(data))
-      .catch(err => console.error(err));
-  }, []);
-*/
+
+    const updateFlagFromPhone = async () => {
+    setIsRefreshing(true);
+    try {
+      // Simulation of a database fetch
+      // In your real MongoDB implementation, this would look like:
+      const profileRes = await fetch('/api/profile');
+      const profileData = await profileRes.json();
+      setProfile(profileData);
+      const contactsRes = await fetch(`/api/contacts?profileId=${profileData._id}`, { cache: 'no-store' });
+      const contactsData = await contactsRes.json();
+      setContacts(contactsData);
+      // const response = await fetch('/api/profile');
+      // const data = await response.json();
+      // const phone = data.phone;
+      
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      const isdCode = contactsData[0].phone.split(' ')[0].replace('+', '').substring(0,2);
+      console.log(`ISD Code: ${contactsData[0].phone.split(' ')[0].replace('+', '').substring(0,2)}`); // Debug log
+      const flagMap: Record<string, string> = {
+        '1': '🇺🇸',
+        '20': '🇪🇬',
+        '31': '🇳🇱',
+        '33': '🇫🇷',
+        '32': '🇧🇪',
+        '34': '🇪🇸',
+        '39': '🇮🇹',
+        '44': '🇬🇧',
+        '49': '🇩🇪',
+        '61': '🇦🇺',
+        '64': '🇳🇿', 
+        '81': '🇯🇵',
+        '91': '🇮🇳',
+      };
+      setCountryFlag(flagMap[isdCode] || '🏳️');
+    } catch (error) {
+      console.error("Failed to fetch flag:", error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
 useEffect(() => {
+
   async function loadData() {
     setLoading(true);
     try {
       const profileRes = await fetch('/api/profile');
       const profileData = await profileRes.json();
-     // console.log(`Profile Data: ${profileData._id}`); // Debug log
+      //console.log(`Profile Data: ${profileData._id}`); // Debug log
       setProfile(profileData);
 
       //setAchievements(profileData.achievements || []);
-      const contactsRes = await fetch(`/api/contacts?profileId=${profileData._id}`);
-      setContacts(await contactsRes.json());
+      //const contactsRes = await fetch(`/api/contacts?profileId=${profileData._id}`);
+      //setContacts(await contactsRes.json());
 
       const achievementsRes = await fetch(`/api/achievements?profileId=${profileData._id}`);
       setAchievements(await achievementsRes.json());
@@ -65,7 +101,10 @@ useEffect(() => {
   }
 
   loadData();
+  updateFlagFromPhone();
 }, []);
+
+
 
   if (!profile || contacts.length === 0) { 
       return (<div className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 lg:p-12 flex items-center justify-center">
@@ -97,12 +136,67 @@ useEffect(() => {
             className="hidden" 
           />
         </div>
+        {/* Dynamic Flag Area */}
+        <div className="relative h-12 flex items-center justify-center">
+                  <AnimatePresence mode="wait">
+                    {!isRefreshing ? (
+                      <motion.div
+                        key="flag"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        className="filter drop-shadow-md"
+                      >
+                        {countryFlag && (
+                          <img 
+                            src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${
+                              countryFlag === '🇺🇸' ? 'US' : 
+                              countryFlag === '🇬🇧' ? 'GB' : 
+                              countryFlag === '🇮🇳' ? 'IN' : 
+                              countryFlag === '🇦🇺' ? 'AU' : 
+                              countryFlag === '🇳🇱' ? 'NL' :
+                              countryFlag === '🇩🇪' ? 'DE' : 
+                              countryFlag === '🇫🇷' ? 'FR' : 
+                              countryFlag === '🇪🇬' ? 'EG' : 
+                              countryFlag === '🇮🇹' ? 'IT' : 
+                              countryFlag === '🇳🇿' ? 'NZ' :
+                              countryFlag === '🇪🇸' ? 'ES' :
+                              countryFlag === '🇩🇪' ? 'DE' : 
+                              countryFlag === '🇧🇪' ? 'BE' : 
+                              countryFlag === '🇯🇵' ? 'JP' : 'UN'
+                            }.svg`}
+                            alt="Country Flag"
+                            className="w-10 h-auto rounded shadow-sm border border-slate-200"
+                          />
+                        )}
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <RefreshCw className="w-5 h-5 text-primary/40 animate-spin" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+        </div>
       </div>
 
       {/* Contact Info */}
       <Card className="overflow-hidden border-none shadow-md bg-card/50 backdrop-blur-sm">
         <CardContent className="p-6 space-y-4">
+          <div className="flex items-center justify-between mb-4">
           <h3 className="font-heading font-semibold text-lg mb-4 text-foreground/80">Contact</h3>
+           <button 
+                        onClick={updateFlagFromPhone}
+                        className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors group"
+                        title="Refresh Flag from Phone"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+                      </button>
+                </div>
    {
           <div className="space-y-3 text-sm">
             <a href={`mailto:${contacts[0].emailId}`} className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors group">
@@ -145,7 +239,7 @@ useEffect(() => {
         <div className="grid gap-3">
           {achievements.map((achievement, index) => (
             <motion.div
-              key={achievement.id}
+              key={achievement._id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + (index+1 * 0.1) }}
