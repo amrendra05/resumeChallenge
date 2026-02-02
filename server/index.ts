@@ -5,7 +5,34 @@ import { createServer } from "http";
 import mongoose from 'mongoose';
 import { PROFILE_SCHEMA_DEF, Profile } from '../shared/schema';
 import 'dotenv/config';  // Add this to load .env
+import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 
+//const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
+
+const client = new SecretManagerServiceClient();
+
+async function getSecret() {
+  const projectId = 'firsttest-2c5d6';
+  const secretName = 'MONGODB_URI';
+
+  const name = `projects/${projectId}/secrets/${secretName}/versions/latest`;
+
+  const [version] = await client.accessSecretVersion({ name });
+
+   let secretValue = "";
+
+  if (!version.payload?.data) {
+    throw new Error('Secret payload is empty');
+  }
+  secretValue=version.payload.data.toString('utf8');
+  // return version.payload.data.toString('utf8');
+
+  console.log('Secret:', secretValue);
+
+  return secretValue;
+}
+
+//getSecret();
 
 const app = express();
 const httpServer = createServer(app);
@@ -26,12 +53,10 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 // Connect to MongoDB (add to .env: MONGODB_URI=your_connection_string)
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/resumeChallenge';
-log(`Connecting to MongoDB: ${mongoUri}`);
+// const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/resumeChallenge';
+
 //mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/resumeChallenge')
-mongoose.connect(mongoUri)
-.then(() => log('MongoDB connected'))
-.catch(err => log(`MongoDB connection error: ${err.message}`));
+
 
 // Define Profile schema (simple model for profile details)
 const profileSchema = new mongoose.Schema<Profile>(PROFILE_SCHEMA_DEF, {collection: 'profiles'});
@@ -98,6 +123,12 @@ app.use((req, res, next) => {
 
 (async () => {
   await registerRoutes(httpServer, app);
+  const mongoUri = await getSecret() || 'mongodb://localhost:27017/resumeChallenge';
+  log(`Connecting to MongoDB: ${mongoUri}`);
+
+  mongoose.connect(mongoUri)
+  .then(() => log('MongoDB connected'))
+  .catch(err => log(`MongoDB connection error: ${err.message}`));
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
