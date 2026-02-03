@@ -5,14 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-//import { AWARDS } from "@/lib/data";
+
 import { useState, useRef, useEffect } from "react";
 import headshotDefault from "/Apps/resumeChallenge/resumeChallenge/attached_assets/generated_images/IMG_3489.png"; // Updated path to match the alias
 import { Achievement, Certification, Profile } from '../../../../shared/schema';
 import { Contacts } from '../../../../shared/schema';
-//import { Project } from '../../../../shared/schema';
-import { AWARDS } from "@/lib/data";
-//import { log } from "../../../../server/index";
 
 export function Sidebar() {
   const [headshot, setHeadshot] = useState(headshotDefault);
