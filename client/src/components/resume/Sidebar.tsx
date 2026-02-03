@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import { useState, useRef, useEffect } from "react";
-import headshotDefault from "/Apps/resumeChallenge/resumeChallenge/attached_assets/generated_images/IMG_3489.png"; // Updated path to match the alias
+import headshotDefault from "../../../../attached_assets/generated_images/professional_headshot_of_a_cloud_engineer.png"; // Updated path to match the alias
 import { Achievement, Certification, Profile } from '../../../../shared/schema';
 import { Contacts } from '../../../../shared/schema';
 
@@ -119,7 +119,7 @@ useEffect(() => {
         <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
           <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-blue-600 rounded-full opacity-75 group-hover:opacity-100 transition duration-500 blur-sm"></div>
           <Avatar className="w-48 h-48 border-4 border-background relative shadow-xl">
-            <AvatarImage src={headshot} alt="Profile Picture" className="object-cover" />
+            <AvatarImage src={profile.imageURL} alt="Profile Picture" className="object-cover" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">

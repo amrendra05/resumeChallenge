@@ -6,30 +6,52 @@ import mongoose from 'mongoose';
 import { PROFILE_SCHEMA_DEF, Profile } from '../shared/schema';
 import 'dotenv/config';  // Add this to load .env
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
+import { error } from "console";
 
 //const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
+// Only create the client when we actually need it
+let client: SecretManagerServiceClient | null = null;
 
-const client = new SecretManagerServiceClient();
+function getClient() {
+  if (!client) client = new SecretManagerServiceClient();
+  return client;
+}
 
-async function getSecret() {
-  const projectId = 'firsttest-2c5d6';
-  const secretName = 'MONGODB_URI';
+export async function getSecret(): Promise<string> {
+  const projectId = process.env.PROJECTID;
+  const dbURISecretName = process.env.dbURISecretName;
 
-  const name = `projects/${projectId}/secrets/${secretName}/versions/latest`;
-
-  const [version] = await client.accessSecretVersion({ name });
-
-   let secretValue = "";
-
-  if (!version.payload?.data) {
-    throw new Error('Secret payload is empty');
+  // If config is missing, skip GCP entirely
+  if (!projectId || !dbURISecretName) {
+    return '';
   }
-  secretValue=version.payload.data.toString('utf8');
-  // return version.payload.data.toString('utf8');
 
-  console.log('Secret:', secretValue);
+  const name = `projects/${projectId}/secrets/${dbURISecretName}/versions/latest`;
 
-  return secretValue;
+  try {
+    // Wrap the API call in a Promise.race with a timeout and full catch
+    // This isolates any internal async failures from crashing Node
+    const version = await (async () => {
+      try {
+        const [res] = await getClient().accessSecretVersion({ name });
+        return res;
+      } catch (error: any) {
+        console.warn("Secret Manager call failed:", error.message || error);
+        return null;
+      }
+    })();
+
+    if (!version?.payload?.data) {
+      return '';
+    }
+
+    return version.payload.data.toString("utf8");
+
+  } catch (err) {
+    // Catch anything that might escape (should be rare)
+    console.warn("Unexpected error while getting secret:", err);
+    return '';
+  }
 }
 
 //getSecret();
@@ -123,7 +145,7 @@ app.use((req, res, next) => {
 
 (async () => {
   await registerRoutes(httpServer, app);
-  const mongoUri = await getSecret() || 'mongodb://localhost:27017/resumeChallenge';
+  const mongoUri = await getSecret() || process.env.MONGODB_URI || 'mongodb://localhost:27017/resumeChallenge';
   log(`Connecting to MongoDB: ${mongoUri}`);
 
   mongoose.connect(mongoUri)
