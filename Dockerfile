@@ -17,6 +17,9 @@ ENV DBURISECRETNAME=MONGODB_URI
 
 WORKDIR /usr/src/app
 
+# Copy the package.json and package-lock.json files to the working directory.
+COPY package.json package-lock.json ./
+
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
 # Leverage a bind mounts to package.json and package-lock.json to avoid having to copy them into
