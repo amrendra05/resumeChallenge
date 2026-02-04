@@ -19,7 +19,7 @@ function getClient() {
 
 export async function getSecret(): Promise<string> {
   const projectId = process.env.PROJECTID;
-  const dbURISecretName = process.env.dbURISecretName;
+  const dbURISecretName = process.env.DBURISECRETNAME;
 
   // If config is missing, skip GCP entirely
   if (!projectId || !dbURISecretName) {
