@@ -10,6 +10,9 @@ ARG NODE_VERSION=22.16.0
 
 FROM node:${NODE_VERSION}-alpine
 
+# Install Python and build tools for node-gyp, which is a dependency of some npm packages.
+RUN apk add --no-cache python3 make g++
+
 # Use production node environment by default.
 ENV NODE_ENV=production
 ENV DBURISECRETNAME=MONGODB_URI
