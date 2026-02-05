@@ -44,3 +44,19 @@ jobs:
       - name: Push Docker image
         run: |
           docker push $REGION-docker.pkg.dev/${{ secrets.GCP_DEV_PROJECT_ID }}/$REPOSITORY/$IMAGE_NAME:${{ github.run_number }}
+
+      - name: Create image name file
+        run: | 
+          IMAGE_REF=$REGION-docker.pkg.dev/${{ secrets.GCP_DEV_PROJECT_ID }}/$REPOSITORY/$IMAGE_NAME:${{ github.run_number }}
+          # Write to a text file
+          echo $IMAGE_REF > image-${{github.run_number}}.txt
+          # Write to a json file
+          cat <<EOF > image-${{github.run_number}}.json
+          {
+          "image": "$IMAGE_REF"
+          }
+          EOF
+      - name: Upload image to GCS
+        run: | 
+          gsutil cp image-${{github.run_number}}.txt gs://cloud-build-bucket-gar/build-info/
+          #gsutil cp image-${{github.run_number}}.json gs://cloud-build-bucket-gar/build-info/
