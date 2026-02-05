@@ -59,4 +59,4 @@ jobs:
       - name: Upload image to GCS
         run: | 
           gsutil cp image-${{github.run_number}}.txt gs://cloud-build-bucket-gar/build-info/
-          gsutil cp image-${{github.run_number}}.json gs://cloud-build-bucket-gar/build-info/
+          #gsutil cp image-${{github.run_number}}.json gs://cloud-build-bucket-gar/build-info/
