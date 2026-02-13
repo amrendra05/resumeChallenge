@@ -1,45 +1,45 @@
-# syntax=docker/dockerfile:1
+# ------------------
+# Build stage
+# ------------------
+FROM node:22.16.0-alpine AS builder
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
-
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
-
-ARG NODE_VERSION=22.16.0
-
-FROM node:${NODE_VERSION}-alpine
-
-# Install Python and build tools for node-gyp, which is a dependency of some npm packages.
+WORKDIR /usr/src/app
 RUN apk add --no-cache python3 make g++
 
-# Use production node environment by default.
-ENV NODE_ENV=production
-ENV DBURISECRETNAME=MONGODB_URI
+# Copy package files first
+COPY package*.json ./
 
+# Install all dependencies (including devDependencies!)
+RUN npm install
+
+# Copy all source code
+COPY . .
+
+# Run build
+RUN npm run build
+
+# ------------------
+# Production stage
+# ------------------
+FROM node:22.16.0-alpine
 
 WORKDIR /usr/src/app
 
-# Copy the package.json and package-lock.json files to the working directory.
-COPY package.json package-lock.json ./
+# Copy built dist folder
+COPY --from=builder /usr/src/app/dist ./dist
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage a bind mounts to package.json and package-lock.json to avoid having to copy them into
-# into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev npm run build   
+# Copy only production dependencies
+COPY --from=builder /usr/src/app/package*.json ./
+RUN npm install --omit=dev
 
-# Run the application as a non-root user.
+# Use non-root user
 USER node
 
-# Copy the rest of the source files into the image.
-COPY . .
-
-# Expose the port that the application listens on.
+# Expose port
 EXPOSE 5000
 
+ENV NODE_ENV=production
+ENV DBURISECRETNAME=MONGODB_URI
 
+# Correct entry point
 CMD ["node", "dist/index.cjs"]
