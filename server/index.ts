@@ -18,9 +18,10 @@ function getClient() {
 }
 
 export async function getSecret(): Promise<string> {
-  const projectId =
-  process.env.GOOGLE_CLOUD_PROJECT ||
-  process.env.GCP_PROJECT;
+
+  const client = new SecretManagerServiceClient();
+
+  const projectId = await client.getProjectId();
   log(`Getting secret for project: ${projectId}`);
   //const dbURISecretName = process.env.DBURISECRETNAME;
 
@@ -36,7 +37,7 @@ export async function getSecret(): Promise<string> {
     // This isolates any internal async failures from crashing Node
     const version = await (async () => {
       try {
-        const [res] = await getClient().accessSecretVersion({ name });
+        const [res] = await client.accessSecretVersion({ name });
         return res;
       } catch (error: any) {
         console.warn("Secret Manager call failed:", error.message || error);
