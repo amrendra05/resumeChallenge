@@ -9,6 +9,7 @@ env:
   REGION: europe-west4
   REPOSITORY: my-apps
   IMAGE_NAME: cloud-resume-challenge
+  DBURISECRETNAME: ${{ secrets.DBURISECRETNAME }}
 
 jobs:
   build-and-push:
