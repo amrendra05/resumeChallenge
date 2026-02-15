@@ -23,6 +23,7 @@ RUN npm run build
 
 # Switch to production mode and remove devDependencies
 ENV NODE_ENV=production
+ENV DBURISECRETNAME=MONGODB_URI
 RUN npm prune --production
 
 # Use non-root user

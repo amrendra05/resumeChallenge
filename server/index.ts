@@ -26,7 +26,7 @@ export async function getSecret(): Promise<string> {
     return '';
   }
 
-  const name = `projects/${projectId}/secrets/${dbURISecretName}/versions/latest`;
+  const name = `projects/${projectId}/secrets/MONGODB_URI/versions/latest`;
 
   try {
     // Wrap the API call in a Promise.race with a timeout and full catch
