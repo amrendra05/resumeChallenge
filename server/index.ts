@@ -22,7 +22,7 @@ export async function getSecret(): Promise<string> {
   const client = new SecretManagerServiceClient();
 
   const projectId = await client.getProjectId();
-  log(`Getting secret for project: ${projectId}`);
+  //log(`Getting secret for project: ${projectId}`);
   //const dbURISecretName = process.env.DBURISECRETNAME;
 
   // If config is missing, skip GCP entirely
