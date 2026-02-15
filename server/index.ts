@@ -21,6 +21,7 @@ export async function getSecret(): Promise<string> {
   const projectId =
   process.env.GOOGLE_CLOUD_PROJECT ||
   process.env.GCP_PROJECT;
+  log(`Getting secret for project: ${projectId}`);
   //const dbURISecretName = process.env.DBURISECRETNAME;
 
   // If config is missing, skip GCP entirely
@@ -29,7 +30,7 @@ export async function getSecret(): Promise<string> {
   }
 
   const name = `projects/${projectId}/secrets/MONGODB_URI/versions/latest`;
-
+  log(`Getting secret name: ${name}`);
   try {
     // Wrap the API call in a Promise.race with a timeout and full catch
     // This isolates any internal async failures from crashing Node
