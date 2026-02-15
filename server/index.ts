@@ -18,11 +18,13 @@ function getClient() {
 }
 
 export async function getSecret(): Promise<string> {
-  const projectId = process.env.PROJECTID;
-  const dbURISecretName = process.env.DBURISECRETNAME;
+  const projectId =
+  process.env.GOOGLE_CLOUD_PROJECT ||
+  process.env.GCP_PROJECT;
+  //const dbURISecretName = process.env.DBURISECRETNAME;
 
   // If config is missing, skip GCP entirely
-  if (!projectId || !dbURISecretName) {
+  if (!projectId) {
     return '';
   }
 
